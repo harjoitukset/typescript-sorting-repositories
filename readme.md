@@ -45,9 +45,13 @@ Rajapinnan dokumentaatio löytyy osoitteesta https://docs.github.com/en/rest/rep
 import { Repository } from "./types/Repository";
 import { getRepositories } from "./client";
 
-let fb: Repository[] = await getRepositories("facebook");
-let ms: Repository[] = await getRepositories("microsoft");
-let google: Repository[] = await getRepositories("google");
+async function example() {
+    let fb: Repository[] = await getRepositories("facebook");
+    let ms: Repository[] = await getRepositories("microsoft");
+    let google: Repository[] = await getRepositories("google");
+
+    // ...
+}
 ```
 
 Karkeasti supistettuna rajapinnasta saatu vastaus voi näyttää esimerkiksi seuraavalta:
