@@ -1,12 +1,10 @@
-# 🚧 <strong>Huom!</strong> MyHelsinki Open API on lakkautettu, joten tämä tehtävä ei ole enää toimintakunnossa. 🚧
+# TypeScript: Repositorioiden suodattaminen ja lajittelu
 
------
+Tämän tehtävän tarkoituksena on harjoitella sisäkkäisistä tietorakenteista koostuvan aineiston suodattamista sekä lajittelua tiettyjen ehtojen mukaisesti.
 
-# TypeScript: Tapahtumien suodattaminen ja lajittelu
+Aineistona käytämme [GitHubin REST-rajapintaa](https://docs.github.com/en/rest) ja sen kautta saatavia tietoja eri repositorioista. [GitHubin rajapinnat](https://docs.github.com/en/rest) mahdollistavat lähes kaikkien GitHubin käyttöön liittyvien operaatioiden suorittamisen ohjelmallisesti. Suuri osa operaatioista edellyttää autentikaatioita, mutta tällä kertaa käytämme yksinkertaisuuden vuoksi vain kaikille avointa rajapintaa.
 
-Tämän tehtävän tarkoituksena on harjoitella sisäkkäisistä tietorakenteista koostuvan aineiston suodattamista sekä järjestämistä eli lajittelua tiettyjen ehtojen mukaisesti.
-
-Aineistona käytämme [MyHelsinki Open API](https://open-api.myhelsinki.fi/) -nimisen REST-rajapinnan tarjoamia tapahtumatietoja. Rajapinnan vastaus koostuu JSON-rakenteessa, jonka sisällä on taulukko tapahtumista, joilla on jokaisella tiedot niiden ajankohdasta, nimistä, sijainnista ja muista tarpeellisista tiedoista.
+💡 *GitHub tarjoaa rajapintojen käyttämiseksi valmiin [octokit.js](https://github.com/octokit/octokit.js)-kirjaston, jonka käyttäminen olisi todennäköisesti kannattavaa oikeassa sovelluksessa. Tämän tehtävän kannalta on kuitenkin tarkoituksenmukaista käyttää `fetch`-kirjastoa ja määritellä tarvittavat tyypit itse.*
 
 
 ## GitHub classroom
@@ -32,95 +30,76 @@ $ npm install
 
 Riippuvuudet sisältävät sekä [TypeScript-kielen](https://www.npmjs.com/package/typescript), [Jest-testaustyökalun](https://www.npmjs.com/package/jest) että [`ts-node`](https://www.npmjs.com/package/ts-node)- ja [`ts-jest`](https://www.npmjs.com/package/ts-jest)-paketit TypeScript-kielisen koodin ja testien suorittamiseksi Node.js:llä.
 
-Lisäksi riippuvuuksista löytyy [`node-fetch`](https://www.npmjs.com/package/node-fetch), joka mahdollistaa selaimista tutun `fetch`-funktion hyödyntämisen REST-rajapinnan kutsumiseksi. Node.js:n [versiosta 18 alkaen](https://nodejs.org/dist/latest/docs/api/globals.html#fetch) `fetch`-funktio kuuluu osaksi standardikirjastoa, eikä vaadi enää erillistä asennusta. Node.js sinulta tulee löytyä valmiina.
+Lisäksi riippuvuuksista löytyy [`node-fetch`](https://www.npmjs.com/package/node-fetch), joka mahdollistaa selaimista tutun `fetch`-funktion hyödyntämisen REST-rajapinnan kutsumiseksi. Node.js sinulta tulee löytyä valmiina.
+
+💡 *Node.js:n [versiosta 18 alkaen](https://nodejs.org/dist/latest/docs/api/globals.html#fetch) `fetch`-funktio kuuluu osaksi standardikirjastoa, eikä vaadi enää erillistä asennusta.*
 
 
 ## Lajiteltava aineisto
 
-[MyHelsinki Open API](https://open-api.myhelsinki.fi/) on MyHelsinki.fi-sivuston avoin REST-rajapinta kaupungin tapahtumien, paikkojen ja aktiviteettien tietoihin:
+[GitHubin repositories-rajapinta](https://docs.github.com/en/rest/repos/repos) on GitHubin avoin REST-rajapinta repositorioihin liittyvien operaatioiden suorittamiseksi.
 
-> *"MyHelsinki.fi-sivuston teknisestä toiminnasta ja tietojen päivittämisestä vastaa Helsinki Partners. Helsinki Partners on kansainväliseen kaupunkimarkkinointiin sekä investointien että osaajien houkutteluun keskittyvä Helsingin kaupungin omistama yhtiö. Lue lisää ja ota yhteyttä osoitteessa [helsinkipartners.com](https://www.helsinkipartners.com/)."*
->
-> https://www.myhelsinki.fi/fi/yhteystiedot
-
-Rajapinnan dokumentaatio löytyy interaktiivisessa [Swagger](https://swagger.io/)-muodossa osoitteesta [https://open-api.myhelsinki.fi/doc](https://open-api.myhelsinki.fi/doc). Kyseisessä osoitteessa on dokumentoituna esimerkkeineen eri resurssien URL-osoitteet, niiden tukemat parametrit ja JSON-tietueiden rakenteet.
-
-Tässä tehtävässä hyödynnämme rajapinnan tarjoamaa **tapahtuma-aineistoa** osoitteesta [https://open-api.myhelsinki.fi/v1/events/](https://open-api.myhelsinki.fi/v1/events/). Aineiston hakua ei tarvitse toteuttaa itse, vaan selöytyy valmiina [src/client.ts](./src/client.ts)-tiedostosta. Tapahtumien hakeminen onnistuu esimerkiksi seuraavasti:
+Rajapinnan dokumentaatio löytyy osoitteesta https://docs.github.com/en/rest/repos/repos. Kyseisessä osoitteessa on dokumentoituna esimerkkeineen eri URL-osoitteet, niiden tukemat parametrit ja palautettavien JSON-tietueiden formaatti. Tässä tehtävässä haemme listauksen [yksittäisen organisaation julkisista repositorioista](https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-organization-repositories). Aineiston hakua ei tarvitse toteuttaa itse, vaan selöytyy valmiina [src/client.ts](./src/client.ts)-tiedostosta. Repositorioiden hakeminen organisaation nimellä onnistuu esimerkiksi seuraavasti:
 
 ```ts
-import { Event } from "./types/Event";
-import { getEvents } from "./client";
+import { Repository } from "./types/Repository";
+import { getRepositories } from "./client";
 
 //...
 
-let events: Event[] = await getEvents();
+let repositories: Repository[] = await getRepositories("facebook");
 ```
 
 Karkeasti supistettuna rajapinnasta saatu vastaus voi näyttää esimerkiksi seuraavalta:
 
 ```json
-{
-  "meta": {},
-  "data": [
-    {
-      "id": "abc123",
-      "name": {
-        "fi": "Suomenkielinen tapahtuman nimi",
-        "en": "English name",
-        "sv": "samma på svenska",
-        "zh": "标题"
-      },
-      "description": {
-        "intro": "",
-        "body": ""
-      },
-      "event_dates": {
-        "starting_day": "2025-10-24T16:00:00.000Z",
-        "ending_day": "2025-10-24T17:00:00.000Z"
-      }
-    }
-  ]
-}
+[
+  {
+    "id": 10270250,
+    "name": "react",
+    "full_name": "facebook/react",
+    "private": false,
+    "owner": {
+      "login": "facebook",
+      "id": 69631
+    },
+    "html_url": "https://github.com/facebook/react",
+    "description": "The library for web and native user interfaces",
+    "url": "https://api.github.com/repos/facebook/react",
+    "created_at": "2013-05-24T16:15:54Z",
+    "updated_at": "2023-08-16T11:19:04Z",
+    "pushed_at": "2023-08-16T01:21:01Z",
+    "git_url": "git://github.com/facebook/react.git",
+    "homepage": "https://react.dev",
+    "watchers_count": 211807,
+    "language": "JavaScript",
+    "archived": false
+  }
+]
 ```
 
-Tehtävässä tätä tietorakennetta vastaava hieman yksinkertaistettu tyyppi on valmiiksi määritettynä [src/types/Event.ts](./src/types/Event.ts)-tiedostossa. Tietojen haku on puolestaan toteutettu [src/client.ts](./src/client.ts)-tiedostoon. Näitä tiedostoja ei tarvitse muokata.
+Edellä esitetystä tietorakenteesta on jätetty pois suurin osa attribuuteista. Tehtävässä yksittäistä repositoriota vastaava yksinkertaistettu tyyppi on valmiiksi määritettynä [src/types/Repository.ts](./src/types/Event.ts)-tiedostossa. Tietojen haku on puolestaan toteutettu [src/client.ts](./src/client.ts)-tiedostoon. Näitä tiedostoja ei tarvitse muokata ja niiden muokkaaminen saattaa aiheuttaa virheitä tehtävän tarkastuksessa.
 
 
 ## Ohjelman suorittaminen
 
-Tehtävän yksinkertainen tekstikäyttöliittymä on toteutettu valmiiksi [`src/index.ts`-tiedostossa](./src/index.ts). Käyttöliittymän on tarkoitus hakea tapahtumatiedot rajapinnasta ja tulostaa seuraavan viikon tapahtumat kasvavassa järjestyksessä niiden alkamisajan mukaan. Ohjelma voidaan suorittaa `ts-node`-työkalulla seuraavasti:
+Tehtävän yksinkertainen tekstikäyttöliittymä on toteutettu valmiiksi [`src/index.ts`-tiedostossa](./src/index.ts). Käyttöliittymän on tarkoitus hakea listaus parametrina annetun organisaation repositorioista ja tulostaa repositoriot laskevassa järjestyksessä niiden seuraajien määrän (`watchers_count`) mukaan. Arkistoidut repositoriot (`archived`) tulee jättää tulostamatta.
 
-```
-$ npx ts-node src/index.ts
+Ohjelma voidaan suorittaa `ts-node`-työkalulla seuraavasti:
+
+```sh
+$ npx ts-node src/index.ts facebook
+# listaa repositoriot organisaatiolle "facebook"
 ```
 
-Mikäli ohjelma lajittelee ja suodattaa tapahtumat oikein, on sen tuloste muodoltaan seuraava. Ohjelman päivämäärät ja kellonajat muotoillaan käyttöjärjestelmän asetusten mukaisesti, joten oma tulosteesi voi poiketa alla esitetystä:
+Mikäli ohjelma järjestää repositoriot oikein ja suodattaa arkistoidut pois, on sen tuloste muodoltaan seuraava:
 
 ```md
-# Events from MyHelsinki Open API
-
-## 2/3/2023
-
- * 2:00:00 PM: Selkokirjan lukemisen klubi
- * 3:00:00 PM: Lasten perjantaileffa
- * 3:00:00 PM: Ukulelejamit
- * 3:00:00 PM: Maunula-talon elokuvakerho: Hytti nro 6
- * 3:00:00 PM: K-pop alkeet alle 13v Itäkeskus
- * 4:00:00 PM: Sellon kirjaston lasten perjantaileffa
- * 4:00:00 PM: Lukubileet
-
-## 2/4/2023
-
- * 7:00:00 AM: Kudonta
- * 7:00:00 AM: Omatoimipaja
- * 8:00:00 AM: Akseli Gallen-Kallelan julistenäyttely Paluu Keniaan
- * 8:00:00 AM: Soile Lehdon maalauksia
- * 8:00:00 AM: Haltian helmikuun retkilauantai
- * 8:00:00 AM: Muumipeikon talvirieha
+TODO
 ...
 ```
 
-Annettu koodi huolehtii tapahtumien tulostamisesta, mutta **tapahtumat ovat väärässä järjestyksessä** ja **tapahtumien alkamisaikaa ei ole rajoitettu**.
+Annettu koodi huolehtii tapahtumien tulostamisesta, mutta **tapahtumat ovat väärässä järjestyksessä** ja **arkistoituja repositorioita ei ole suodatettu**.
 
 Kutsut tapahtumien suodattamiseksi ja lajittelemiseksi ovat valmiiksi paikoillaan [src/index.ts](./src/index.ts)-tiedostossa, mutta sinun tehtäväsi on toteuttaa varsinainen logiikka aineiston [suodattamiseksi](./src/filtering.ts) ja [lajittelemiseksi](./src/sorting.ts).
 
@@ -131,24 +110,15 @@ Tiedostossa [src/filtering.ts](./src/filtering.ts) on määriteltynä seuraava f
 
 ```ts
 /**
- * Returns a new array of Events that only contains those events from the given `events` array
- * that have their starting_day between the two given `Date` objects.
+ * Returns a new array of Repositories that only contains those that
+ * have not been archived.
  */
-export function filterEventsByStartDate(events: Event[], minDate: Date, maxDate: Date): Event[] {
-
+export function filterActiveRepositories(repositories: Repository[]): Repository[] {
+    // ...
 }
 ```
 
-Tehtäväsi on toteuttaa tähän funktioon toimintalogiikka, joka suodattaa annetuista tapahtumista sellaiset, joiden alkamisaika (`event_dates.starting_day`) sijoittuu annetun minimi- ja maksimiajan väliin.
-
-Huomaa, että kaikilla rajapinnan palauttamilla tapahtumilla ei välttämättä ole alkamisaikaa. **Tuntemattoman ajankohdan tapahtumat tulee suodattaa pois aineistosta.**
-
-Huomaa myös, että **käsiteltävässä tietorakenteessa päivämäärät ovat merkkijonoja**, kuten `"2025-10-24T16:00:00.000Z"`. Funktiolle annettavat parametrit ovat puolestaan [Date-olioita](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date). Voit hyödyntää päivämäärien muuntamisessa ja käsittelyssä halutessasi erillisiä npm-paketteja, mutta pärjäät myös hyvin ilman. Tässä voi olla apua esim. seuraavista:
-
-* [`Date`-luokan konstruktori](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#constructor)
-* [`getTime()`-metodi](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTime)
-* [Nullish coalescing operator (`??`)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing)
-* [Optional chaining (`?.`)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
+Tehtäväsi on toteuttaa tähän funktioon toimintalogiikka, joka suodattaa annetuista repositorioista sellaiset, joita ei ole arkistoitu.
 
 Voit ajaa vain [suodattamista koskevat testit](./src/filtering.test.ts) seuraavalla komennolla:
 
@@ -160,18 +130,15 @@ Testien kuvaukset voivat auttaa hahmottamaan, minkälaisia tapauksia logiikassa 
 
 ```
 PASS  src/filtering.test.ts
-filtering events
-  ✓ events with no date are excluded
-  ✓ past events are excluded
-  ✓ future events are excluded
-  ✓ events in the range are included
-  ✓ function does not modify the given array
+
+TODO
+
 ```
 
 
-## Osa 2: tapahtumien lajittelu (3 pistettä)
+## Osa 2: repositorioiden lajittelu (3 pistettä)
 
-Tehtävän toisessa osassa sinun tulee **järjestää** eli **lajitella** tapahtumat niiden alkamisajan mukaan käyttäen **itse toteuttamaasi lajittelualgoritmia**.
+Tehtävän toisessa osassa sinun tulee **järjestää** eli **lajitella** repositoriot niiden seuraajien mukaan käyttäen **itse toteuttamaasi lajittelualgoritmia**.
 
 > *"Some examples where you can find direct application of sorting techniques include: Sorting by price, popularity etc in e-commerce websites"*
 >
@@ -181,21 +148,27 @@ Tiedostossa [src/sorting.ts](./src/sorting.ts) on määriteltynä seuraava funkt
 
 ```ts
 /**
- * Returns a new array, where all Events from the given array are sorted by their
- * `starting_day` in ascending order.
+ * Returns a **new** array, where all Repositories from
+ * the given array are sorted by their `watchers_count`.
+ *
+ * Caller can specify to sort the watchers in ascending
+ * order (low to high) or descending order (from high to low).
+ *
+ * @param repositories to use in sorting
+ * @param order either ascending ("asc") or descending ("desc") order.
  */
-export function sortEventsByStartDate(events: Event[]): Event[] {
-    // note! Using the existing `sort` method is forbidden!
+export function sortByWatchers(repos: Repository[], order: "asc" | "desc"): Repository[] {
+  // ...
 }
 ```
 
-Toteuta lajittelulogiikkasi tähän funktioon siten, että funktio palauttaa lopuksi uuden tapahtumataulukon, joka on lajiteltu tapahtuman alkamisajan mukaan kasvavassa järjestyksessä. Voit halutessasi toteuttaa myös erillisiä apufunktioita.
+Huomaa, että `order`-parametrissa on hyödynnetty [TypeScriptin vakioiden yhdistämistä siten](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#literal-types), että tyyppijärjestelmä sallii vain arvot `asc` tai `desc` eikä mitään muita merkkijonoja.
 
-Huomaa, että koodisi tulee lajitella **kokonaisia tapahtumatietueita**, eli et voi poimia aineistosta esimerkiksi pelkkiä nimiä ja alkamisaikoja.
+Toteuta lajittelulogiikkasi tähän funktioon siten, että funktio palauttaa lopuksi **uuden** tapahtumataulukon, joka on lajiteltu `watchers_count`-arvon mukaan laskevassa järjestyksessä. Voit halutessasi toteuttaa myös erillisiä apufunktioita.
 
-**Huom!** Kaikilla tapahtumilla ei välttämättä ole alkamisaikaa tiedossa, eli alkamisaika voi olla `null` tai `undefined`. Tällaiset tapahtumat tulee lajitella aineiston **alkuun** ennen muita tapahtumia.
+Huomaa, että koodisi tulee lajitella **annettuja repositorio-objekteja**, eli et voi poimia aineistosta esimerkiksi pelkkiä nimiä ja seuraajien määriä ja lajitella niitä.
 
-🚨 **Tämän harjoituksen tavoitteena on opetella itse toteuttamaan jokin tunnettu lajittelualgoritmi, joten JavaScriptin valmiin `Array.sort`-funktion käyttämistä ei sallita.** 🚨
+👮‍♀️🚨 **Tämän harjoituksen tavoitteena on opetella itse toteuttamaan jokin tunnettu lajittelualgoritmi, joten JavaScriptin valmiin `Array.sort`-funktion käyttämistä ei sallita.** 🚨👮‍♀️
 
 Voit ajaa vain [lajittelua koskevat testit](./src/sorting.test.ts) seuraavalla komennolla:
 
@@ -207,15 +180,11 @@ Testien kuvaukset voivat auttaa hahmottamaan, minkälaisia tapauksia logiikassa 
 
 ```
 PASS  src/sorting.test.ts
-sorting events by starting date
-  ✓ events are sorted in correct order
-  ✓ sorting handles events with identical dates correctly
-  ✓ sorting an empty array should not throw exceptions
-  ✓ sorting events without dates should not throw exceptions
-  ✓ events with no date are in the beginning of the sorted array
-  ✓ sorting does not modify the original array
-  ✓ sorting is not allowed to utilize Array.sort
+TODO
 ```
+
+💡 Jos kahdella repositoriolla on tasan sama määrä seuraajia, ei niiden keskinäisellä järjestyksellä ole merkitystä.
+
 
 ### Yleisimmät lajittelualgoritmit
 
@@ -281,10 +250,10 @@ Varsinaiset testit löytyvät tiedostoista [src/filtering.test.ts](./src/filteri
 Tämän oppimateriaalin on kehittänyt Teemu Havulinna ja se on lisensoitu [Creative Commons BY-NC-SA -lisenssillä](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
 
-## MyHelsinki Open API
+## The GitHub terms of service
 
-> *"Note that all of the information provided over the API is open data with the exception of image files. When using images, please refer to the license terms included with each image.*"
+Tehtävässä hyödynnetään GitHubin avointa rajapintaa repositorioiden nimien listaamiseksi. Ladattavaa dataa sekä GitHubin rajapintaa koskee [GitHubin käyttöehdot](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).
+
+> *"Abuse or excessively frequent requests to GitHub via the API may result in the temporary or permanent suspension of your Account's access to the API. GitHub, in our sole discretion, will determine abuse or excessive usage of the API. We will make a reasonable attempt to warn you via email prior to suspension."*
 >
-> MyHelsinki Open API. https://open-api.myhelsinki.fi/
-
-MyHelsinki Open API:n aineisto on kuvia lukuun ottamatta lisensoitu [Creative Commons BY 4.0](https://open-api.myhelsinki.fi/terms)-lisenssillä. Voit lukea tarkemmat käyttöehdot ositteesta https://open-api.myhelsinki.fi/terms.
+> https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms

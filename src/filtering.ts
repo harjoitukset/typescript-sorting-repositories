@@ -1,9 +1,10 @@
-import { Event } from "./types/Event";
+import { Repository } from "./types/Repository";
 
 /**
- * Returns a new array of Events that only contains those events from the given `events` array
- * that have their starting_day between the two given `Date` objects.
+ * Returns a new array of Repositories that only contains those that
+ * have not been archived.
  */
-export function filterEventsByStartDate(events: Event[], minDate: Date, maxDate: Date): Event[] {
-    return events;
+export function filterActiveRepositories(repositories: Repository[]): Repository[] {
+    // todo: create a new array with only active repositories
+    return repositories;
 }

@@ -1,65 +1,61 @@
 import { test, describe, expect } from '@jest/globals';
 import { strict as assert } from 'node:assert';
-import { Event } from './types/Event';
-import { sortEventsByStartDate } from './sorting';
+import { Repository } from './types/Repository';
+import { sortByWatchers } from './sorting';
 
-/** Creates an Event with the given date. Useful for testing. */
-function createTestEvent(startingDay?: string): Event {
-    return {
-        name: {},
-        description: {},
-        event_dates: {
-            starting_day: startingDay
-        }
-    };
-}
+// a constant object that can be used when creating test data
+const repository: Repository = Object.freeze({
+    id: 1,
+    name: "demo",
+    full_name: "ohjelmistokehitys/demo",
+    private: false,
+    owner: {
+        login: "ohjelmistokehitys",
+        id: 2
+    },
+    html_url: "",
+    description: "",
+    url: "",
+    created_at: "",
+    updated_at: "",
+    pushed_at: "",
+    git_url: "",
+    homepage: "",
+    watchers_count: 12345,
+    language: "",
+    archived: false
+});
 
-describe('sorting events by starting date', () => {
-    const first: Event = createTestEvent('2024-12-31T16:00:00.000Z');
-    const second: Event = createTestEvent('2025-01-05T16:00:00.000Z');
-    const third: Event = createTestEvent('2025-01-10T16:00:00.000Z');
+describe('sorting repositories by watchers count', () => {
+    const repo0: Repository = { ...repository, watchers_count: 0 };
+    const repo10: Repository = { ...repository, watchers_count: 10 };
+    const repo100: Repository = { ...repository, watchers_count: 100 };
 
-    const unordered = [third, first, second];
+    const unordered = [repo100, repo0, repo10];
 
-    test('events are sorted in correct order', () => {
-        let sorted = sortEventsByStartDate(unordered);
+    test('repos can be sorted in ascending order', () => {
+        let sorted = sortByWatchers(unordered, "asc")
 
-        assert.deepEqual(sorted, [first, second, third]);
+        assert.deepEqual(sorted, [repo0, repo10, repo100]);
     });
 
-    test('sorting handles events with identical dates correctly', () => {
-        let unorderedTwice = [...unordered, ...unordered];
-        let sorted = sortEventsByStartDate(unorderedTwice);
+    test('repos can be sorted in descending order', () => {
+        let sorted = sortByWatchers(unordered, "desc")
 
-        assert.deepEqual(sorted, [first, first, second, second, third, third]);
+        assert.deepEqual(sorted, [repo100, repo10, repo0]);
     });
 
     test('sorting an empty array should not throw exceptions', () => {
-        let sorted = sortEventsByStartDate([]);
+        let sorted = sortByWatchers([], "asc");
 
         assert.deepEqual(sorted, []);
     });
 
-    test('sorting events without dates should not throw exceptions', () => {
-        let noDate = createTestEvent(undefined);
-        let sorted = sortEventsByStartDate([noDate, noDate]);
+    test('sorting should not modify the original array', () => {
+        let original = [...unordered];
+        let sorted = sortByWatchers(unordered, "desc");
 
-        assert.deepEqual(sorted, [noDate, noDate]);
-    });
-
-    test('events with no date are in the beginning of the sorted array', () => {
-        let noDate = createTestEvent(undefined);
-
-        let original = [third, noDate, first, noDate, second];
-        let sorted = sortEventsByStartDate(original);
-
-        assert.deepEqual(sorted, [noDate, noDate, first, second, third]);
-    });
-
-    test('sorting does not modify the original array', () => {
-        sortEventsByStartDate(unordered);
-
-        assert.deepEqual(unordered, [third, first, second]);
+        assert.deepEqual(original, [repo100, repo0, repo10]);
     });
 
     test('sorting is not allowed to utilize Array.sort', () => {
@@ -69,10 +65,10 @@ describe('sorting events by starting date', () => {
         };
         jest.spyOn(Array.prototype, 'sort').mockImplementation(notAllowed);
 
-        // if Array.sort is called inside the function, an error will be thrown
-        sortEventsByStartDate(unordered);
+        // if Array.sort is called inside the function, an error will be thrown here
+        sortByWatchers(unordered, "asc");
 
+        // if we got past the previous step, the test should always pass
         assert.ok(true, 'Array.sort was not called');
     });
-
 });
