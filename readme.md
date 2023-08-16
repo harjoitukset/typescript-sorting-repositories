@@ -95,7 +95,15 @@ $ npx ts-node src/index.ts facebook
 Mikäli ohjelma järjestää repositoriot oikein ja suodattaa arkistoidut pois, on sen tuloste muodoltaan seuraava:
 
 ```md
-TODO
+* react
+  * ⭐ 211821
+  * The library for web and native user interfaces
+  * JavaScript
+
+* react-native
+  * ⭐ 111264
+  * A framework for building native applications using React
+  * Java
 ...
 ```
 

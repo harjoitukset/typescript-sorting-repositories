@@ -11,12 +11,12 @@ export interface Repository {
     html_url: string;
     description: string;
     url: string;
-    created_at: string;
-    updated_at: string;
-    pushed_at: string;
-    git_url: string;
-    homepage: string;
-    watchers_count: number;
-    language: string;
-    archived: boolean;
+    created_at?: string;
+    updated_at?: string;
+    pushed_at?: string;
+    git_url?: string;
+    homepage?: string;
+    watchers_count?: number;
+    language?: string;
+    archived?: boolean;
 }
