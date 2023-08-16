@@ -24,6 +24,8 @@ async function main() {
         const active = filterActiveRepositories(repositories);
         const sorted = sortByWatchers(active, "desc");
 
+        console.log(`# Repositories for ${organization}`);
+
         sorted.forEach(printRepository);
 
     } catch (error) {

@@ -1,8 +1,8 @@
-# TypeScript: Repositorioiden suodattaminen ja lajittelu
+# TypeScript: repositorioiden suodattaminen ja lajittelu
 
 Tämän tehtävän tarkoituksena on harjoitella sisäkkäisistä tietorakenteista koostuvan aineiston suodattamista sekä lajittelua tiettyjen ehtojen mukaisesti.
 
-Aineistona käytämme [GitHubin REST-rajapintaa](https://docs.github.com/en/rest) ja sen kautta saatavia tietoja eri repositorioista. [GitHubin rajapinnat](https://docs.github.com/en/rest) mahdollistavat lähes kaikkien GitHubin käyttöön liittyvien operaatioiden suorittamisen ohjelmallisesti. Suuri osa operaatioista edellyttää autentikaatioita, mutta tällä kertaa käytämme yksinkertaisuuden vuoksi vain kaikille avointa rajapintaa.
+Aineistona käytämme [GitHubin REST-rajapintaa](https://docs.github.com/en/rest) ja sen kautta saatavia tietoja eri repositorioista. [GitHubin rajapinnat](https://docs.github.com/en/rest) mahdollistavat lähes kaikkien GitHubin käyttöön liittyvien operaatioiden suorittamisen ohjelmallisesti. Merkittävä osa operaatioista edellyttää autentikaatioita, mutta tällä kertaa käytämme yksinkertaisuuden vuoksi vain kaikille avointa rajapintaa.
 
 💡 *GitHub tarjoaa rajapintojen käyttämiseksi valmiin [octokit.js](https://github.com/octokit/octokit.js)-kirjaston, jonka käyttäminen olisi todennäköisesti kannattavaa oikeassa sovelluksessa. Tämän tehtävän kannalta on kuitenkin tarkoituksenmukaista käyttää `fetch`-kirjastoa ja määritellä tarvittavat tyypit itse.*
 
@@ -17,7 +17,7 @@ Kun olet hyväksynyt tehtävän GitHub classroomissa ja saanut repositoriosta he
 
 Kloonatessasi repositoriota **varmista, että Git-osoitteen lopussa on oma GitHub-käyttäjänimesi**. Jos käyttäjänimesi puuttuu osoitteesta, kyseessä ei ole henkilökohtainen kopiosi tehtävästä. Luo tässä tapauksessa oma classroom-kopio tehtävästä itsellesi Teams-tehtävästä löytyvän linkin avulla.
 
-💡 Automaattisen arvioinnin vuoksi et saa muuttaa annettujen tiedostojen ja funktioiden nimiä, etkä parametrien ja paluuarvojen tyyppejä.
+💡 *Automaattisen arvioinnin vuoksi et saa muuttaa annettujen tiedostojen ja funktioiden nimiä, etkä parametrien ja paluuarvojen tyyppejä.*
 
 
 ## Riippuvuuksien asentaminen
@@ -35,7 +35,7 @@ Lisäksi riippuvuuksista löytyy [`node-fetch`](https://www.npmjs.com/package/no
 💡 *Node.js:n [versiosta 18 alkaen](https://nodejs.org/dist/latest/docs/api/globals.html#fetch) `fetch`-funktio kuuluu osaksi standardikirjastoa, eikä vaadi enää erillistä asennusta.*
 
 
-## Lajiteltava aineisto
+## Käytettävä tietoaineisto
 
 [GitHubin repositories-rajapinta](https://docs.github.com/en/rest/repos/repos) on GitHubin avoin REST-rajapinta repositorioihin liittyvien operaatioiden suorittamiseksi.
 
@@ -45,9 +45,9 @@ Rajapinnan dokumentaatio löytyy osoitteesta https://docs.github.com/en/rest/rep
 import { Repository } from "./types/Repository";
 import { getRepositories } from "./client";
 
-//...
-
-let repositories: Repository[] = await getRepositories("facebook");
+let fb: Repository[] = await getRepositories("facebook");
+let ms: Repository[] = await getRepositories("microsoft");
+let google: Repository[] = await getRepositories("google");
 ```
 
 Karkeasti supistettuna rajapinnasta saatu vastaus voi näyttää esimerkiksi seuraavalta:
@@ -78,12 +78,14 @@ Karkeasti supistettuna rajapinnasta saatu vastaus voi näyttää esimerkiksi seu
 ]
 ```
 
-Edellä esitetystä tietorakenteesta on jätetty pois suurin osa attribuuteista. Tehtävässä yksittäistä repositoriota vastaava yksinkertaistettu tyyppi on valmiiksi määritettynä [src/types/Repository.ts](./src/types/Repository.ts)-tiedostossa. Tietojen haku on puolestaan toteutettu [src/client.ts](./src/client.ts)-tiedostoon. Näitä tiedostoja ei tarvitse muokata ja niiden muokkaaminen saattaa aiheuttaa virheitä tehtävän tarkastuksessa.
+Voit kokeilla rajapintaa selaimella esim. osoitteessa https://api.github.com/orgs/python/repos?per_page=100.
+
+Yllä esitetystä tietorakenteesta on jätetty yksinkertaisuuden vuoksi pois suuri osa attribuuteista. Tehtävässä yksittäistä repositoriota vastaava yksinkertaistettu tyyppi on valmiiksi määritettynä [src/types/Repository.ts](./src/types/Repository.ts)-tiedostossa. Tietojen haku on puolestaan toteutettu [src/client.ts](./src/client.ts)-tiedostoon. Näitä tiedostoja ei tarvitse muokata ja niiden muokkaaminen saattaa aiheuttaa virheitä tehtävän tarkastuksessa, ellet päivitä myös testejä vastaamaan muutoksiasi.
 
 
 ## Ohjelman suorittaminen
 
-Tehtävän yksinkertainen tekstikäyttöliittymä on toteutettu valmiiksi [`src/index.ts`-tiedostossa](./src/index.ts). Käyttöliittymän on tarkoitus hakea listaus parametrina annetun organisaation repositorioista ja tulostaa repositoriot laskevassa järjestyksessä niiden seuraajien määrän (`watchers_count`) mukaan. Arkistoidut repositoriot (`archived`) tulee jättää tulostamatta.
+Tehtävän yksinkertainen tekstikäyttöliittymä on toteutettu valmiiksi [`src/index.ts`-tiedostossa](./src/index.ts). Käyttöliittymän on tarkoitus hakea listaus parametrina annetun organisaation repositorioista ja tulostaa repositoriot annetussa järjestyksessä niiden seuraajien määrän (`watchers_count`) mukaan. Arkistoidut repositoriot (`archived`) tulee jättää tulostamatta.
 
 Ohjelma voidaan suorittaa `ts-node`-työkalulla seuraavasti:
 
@@ -95,6 +97,8 @@ $ npx ts-node src/index.ts facebook
 Mikäli ohjelma järjestää repositoriot oikein ja suodattaa arkistoidut pois, on sen tuloste muodoltaan seuraava:
 
 ```md
+# Repositories for facebook
+
 * react
   * ⭐ 211821
   * The library for web and native user interfaces
@@ -107,9 +111,11 @@ Mikäli ohjelma järjestää repositoriot oikein ja suodattaa arkistoidut pois, 
 ...
 ```
 
-Annettu koodi huolehtii repositorioiden nimien, mutta **ne ovat väärässä järjestyksessä** ja **arkistoituja repositorioita ei ole suodatettu**.
+Tuloste imitoi [markdown](https://en.wikipedia.org/wiki/Markdown)-syntaksia, joskin tehtävän kannalta tulosteella ei ole juuri merkitystä. Annettu valmis koodi huolehtii repositorioiden perustietojen tulostamisesta, mutta **ne ovat satunnaisessa järjestyksessä** ja **arkistoituja repositorioita ei ole suodatettu**.
 
 Kutsut repositorioiden suodattamiseksi ja lajittelemiseksi ovat valmiiksi paikoillaan [src/index.ts](./src/index.ts)-tiedostossa, mutta sinun tehtäväsi on toteuttaa varsinainen logiikka aineiston [suodattamiseksi](./src/filtering.ts) ja [lajittelemiseksi](./src/sorting.ts).
+
+💡 *Koska edellä esitetty käynnistyskomento on määritetty myös [package.json](./package.json)-tiedoston scripts-lohkoon, voidaan ohjelma suorittaa myös vaihtoehtoisesti komennolla `npm start [organisaatio]`.*
 
 
 ## Osa 1: aineiston suodattaminen (2 pistettä)
@@ -126,7 +132,7 @@ export function filterActiveRepositories(repositories: Repository[]): Repository
 }
 ```
 
-Tehtäväsi on toteuttaa tähän funktioon toimintalogiikka, joka suodattaa annetuista repositorioista sellaiset, joita ei ole arkistoitu.
+Tehtäväsi on toteuttaa tähän ☝ funktioon toimintalogiikka, joka suodattaa annetuista repositorioista aktiiviset, eli ne, joita ei ole arkistoitu.
 
 Voit ajaa vain [suodattamista koskevat testit](./src/filtering.test.ts) seuraavalla komennolla:
 
@@ -137,10 +143,11 @@ $ npm test src/filtering.test.ts
 Testien kuvaukset voivat auttaa hahmottamaan, minkälaisia tapauksia logiikassa tulee ottaa huomioon:
 
 ```
-PASS  src/filtering.test.ts
-
-TODO
-
+ PASS  src/filtering.test.ts
+  filtering archived repositories
+    ✓ archived repositories are excluded
+    ✓ active repositories are included in array
+    ✓ function does not modify the given array
 ```
 
 
@@ -170,9 +177,9 @@ export function sortByWatchers(repos: Repository[], order: "asc" | "desc"): Repo
 }
 ```
 
-Huomaa, että `order`-parametrissa on hyödynnetty [TypeScriptin vakioiden yhdistämistä siten](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#literal-types), että tyyppijärjestelmä sallii vain arvot `asc` tai `desc` eikä mitään muita merkkijonoja.
+💡 *Huomaa, että `order`-parametrissa on hyödynnetty [TypeScriptin vakioiden yhdistämistä](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#literal-types). Tyyppijärjestelmä sallii siten vain arvot `"asc"` tai `"desc"`, eikä mitään muita merkkijonoja.*
 
-Toteuta lajittelulogiikkasi tähän funktioon siten, että funktio palauttaa lopuksi **uuden** taulukon, joka on lajiteltu `watchers_count`-arvon mukaan laskevassa järjestyksessä. Voit halutessasi toteuttaa myös erillisiä apufunktioita.
+Toteuta lajittelulogiikkasi yllä esitettyyn funktioon siten, että funktio palauttaa lopuksi **uuden** taulukon, joka on lajiteltu `watchers_count`-arvon mukaan joko laskevassa tai nousevassa järjestyksessä. Voit halutessasi toteuttaa myös erillisiä apufunktioita.
 
 Huomaa, että koodisi tulee lajitella **annettuja repositorio-objekteja**, eli et voi poimia aineistosta esimerkiksi pelkkiä nimiä ja seuraajien määriä ja lajitella niitä.
 
@@ -187,11 +194,16 @@ $ npm test src/sorting.test.ts
 Testien kuvaukset voivat auttaa hahmottamaan, minkälaisia tapauksia logiikassa tulee ottaa huomioon:
 
 ```
-PASS  src/sorting.test.ts
-TODO
+ PASS  src/sorting.test.ts
+  sorting repositories by watchers count
+    ✓ repos can be sorted in ascending order
+    ✓ repos can be sorted in descending order
+    ✓ sorting an empty array should not throw exceptions
+    ✓ sorting should not modify the original array
+    ✓ sorting is not allowed to utilize Array.sort
 ```
 
-💡 Jos kahdella repositoriolla on tasan sama määrä seuraajia, ei niiden keskinäisellä järjestyksellä ole merkitystä.
+💡 *Jos kahdella repositoriolla on tasan sama määrä seuraajia, ei niiden keskinäisellä järjestyksellä ole merkitystä.*
 
 
 ### Yleisimmät lajittelualgoritmit
@@ -260,7 +272,7 @@ Tämän oppimateriaalin on kehittänyt Teemu Havulinna ja se on lisensoitu [Crea
 
 ## The GitHub terms of service
 
-Tehtävässä hyödynnetään GitHubin avointa rajapintaa repositorioiden nimien listaamiseksi. Ladattavaa dataa sekä GitHubin rajapintaa koskee [GitHubin käyttöehdot](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).
+Tehtävässä hyödynnetään GitHubin avointa rajapintaa repositorioiden nimien listaamiseksi. Käytettyä dataa sekä GitHubin rajapintaa koskee [GitHubin käyttöehdot](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).
 
 > *"Abuse or excessively frequent requests to GitHub via the API may result in the temporary or permanent suspension of your Account's access to the API. GitHub, in our sole discretion, will determine abuse or excessive usage of the API. We will make a reasonable attempt to warn you via email prior to suspension."*
 >
