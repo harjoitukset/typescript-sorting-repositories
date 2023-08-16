@@ -48,7 +48,9 @@ import { getRepositories } from "./client";
 async function example() {
     let fb: Repository[] = await getRepositories("facebook");
     let ms: Repository[] = await getRepositories("microsoft");
-    let google: Repository[] = await getRepositories("google");
+
+    // you can optionally specify how many repositories to include:
+    let google: Repository[] = await getRepositories("google", 10);
 
     // ...
 }

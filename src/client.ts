@@ -8,11 +8,11 @@ import fetch from "node-fetch";
  * @see https://docs.github.com/en/rest/repos/repos
  *
  * @param organization name of the organization
- * @param [maxCount=100] Maximum count of repositories. Maximum value is 100.
+ * @param [limit=100] Count of repositories to include. Maximum value is 100.
  * @returns array of repositories
  */
-export async function getRepositories(organization: string, maxCount: number = 100): Promise<Repository[]> {
-    let response = await fetch(`https://api.github.com/orgs/${organization}/repos?per_page=${maxCount}`);
+export async function getRepositories(organization: string, limit: number = 100): Promise<Repository[]> {
+    let response = await fetch(`https://api.github.com/orgs/${organization}/repos?per_page=${limit}`);
 
     if (!response.ok) {
         throw new Error(`Got HTTP status ${response.status} (${response.statusText}) when fetching repositories.`);
