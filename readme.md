@@ -78,7 +78,7 @@ Karkeasti supistettuna rajapinnasta saatu vastaus voi näyttää esimerkiksi seu
 ]
 ```
 
-Edellä esitetystä tietorakenteesta on jätetty pois suurin osa attribuuteista. Tehtävässä yksittäistä repositoriota vastaava yksinkertaistettu tyyppi on valmiiksi määritettynä [src/types/Repository.ts](./src/types/Event.ts)-tiedostossa. Tietojen haku on puolestaan toteutettu [src/client.ts](./src/client.ts)-tiedostoon. Näitä tiedostoja ei tarvitse muokata ja niiden muokkaaminen saattaa aiheuttaa virheitä tehtävän tarkastuksessa.
+Edellä esitetystä tietorakenteesta on jätetty pois suurin osa attribuuteista. Tehtävässä yksittäistä repositoriota vastaava yksinkertaistettu tyyppi on valmiiksi määritettynä [src/types/Repository.ts](./src/types/Repository.ts)-tiedostossa. Tietojen haku on puolestaan toteutettu [src/client.ts](./src/client.ts)-tiedostoon. Näitä tiedostoja ei tarvitse muokata ja niiden muokkaaminen saattaa aiheuttaa virheitä tehtävän tarkastuksessa.
 
 
 ## Ohjelman suorittaminen
@@ -99,9 +99,9 @@ TODO
 ...
 ```
 
-Annettu koodi huolehtii tapahtumien tulostamisesta, mutta **tapahtumat ovat väärässä järjestyksessä** ja **arkistoituja repositorioita ei ole suodatettu**.
+Annettu koodi huolehtii repositorioiden nimien, mutta **ne ovat väärässä järjestyksessä** ja **arkistoituja repositorioita ei ole suodatettu**.
 
-Kutsut tapahtumien suodattamiseksi ja lajittelemiseksi ovat valmiiksi paikoillaan [src/index.ts](./src/index.ts)-tiedostossa, mutta sinun tehtäväsi on toteuttaa varsinainen logiikka aineiston [suodattamiseksi](./src/filtering.ts) ja [lajittelemiseksi](./src/sorting.ts).
+Kutsut repositorioiden suodattamiseksi ja lajittelemiseksi ovat valmiiksi paikoillaan [src/index.ts](./src/index.ts)-tiedostossa, mutta sinun tehtäväsi on toteuttaa varsinainen logiikka aineiston [suodattamiseksi](./src/filtering.ts) ja [lajittelemiseksi](./src/sorting.ts).
 
 
 ## Osa 1: aineiston suodattaminen (2 pistettä)
@@ -164,7 +164,7 @@ export function sortByWatchers(repos: Repository[], order: "asc" | "desc"): Repo
 
 Huomaa, että `order`-parametrissa on hyödynnetty [TypeScriptin vakioiden yhdistämistä siten](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#literal-types), että tyyppijärjestelmä sallii vain arvot `asc` tai `desc` eikä mitään muita merkkijonoja.
 
-Toteuta lajittelulogiikkasi tähän funktioon siten, että funktio palauttaa lopuksi **uuden** tapahtumataulukon, joka on lajiteltu `watchers_count`-arvon mukaan laskevassa järjestyksessä. Voit halutessasi toteuttaa myös erillisiä apufunktioita.
+Toteuta lajittelulogiikkasi tähän funktioon siten, että funktio palauttaa lopuksi **uuden** taulukon, joka on lajiteltu `watchers_count`-arvon mukaan laskevassa järjestyksessä. Voit halutessasi toteuttaa myös erillisiä apufunktioita.
 
 Huomaa, että koodisi tulee lajitella **annettuja repositorio-objekteja**, eli et voi poimia aineistosta esimerkiksi pelkkiä nimiä ja seuraajien määriä ja lajitella niitä.
 
@@ -229,7 +229,7 @@ Voit valita itsellesi mieluisen algoritmin esimerkiksi tutustumalla ensin niiden
 
 Arvioi lopuksi tehtävää ratkaistessasi lajitteluun kuluvaa aikaa. Miten esimerkiksi aineiston koon kaksinkertaistaminen vaikuttaisi ohjelmasi suoritusaikaan? Kirjoita yhden virkkeen pituinen arvio suorituskyvystä funktiosi yhteyteen kommenttina.
 
-**Huom!** Oikeassa ohjelmistoprojektissa käyttäisit JavaScriptin `Array.sort`-funktiota ja antaisit sille parametrina kahden tapahtuman ajankohtia vertailevan vertailufunktion. Voit tutustua aiheeseen esim. [mdn web docs -sivustolla](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort). Tässä tehtävässä kuitenkin harjoitellaan algoritmin toteutusta, joten kirjoitamme lajittelun itse.
+**Huom!** Oikeassa ohjelmistoprojektissa käyttäisit JavaScriptin `Array.sort`-funktiota ja antaisit sille parametrina kahta repositoriota vertailevan vertailufunktion. Voit tutustua aiheeseen esim. [mdn web docs -sivustolla](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort). Tässä tehtävässä kuitenkin harjoitellaan algoritmin toteutusta, joten kirjoitamme lajittelun itse.
 
 
 ## Tehtävän testaaminen
